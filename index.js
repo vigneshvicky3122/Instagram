@@ -8,7 +8,7 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const { MongoClient, ObjectId } = require("mongodb");
 const Client = new MongoClient(process.env.DB_URL);
-
+const PORT = process.env.PORT || 8000;
 const app = express();
 
 app.use(
@@ -1104,6 +1104,6 @@ app.delete("/delete-post/:id", authentication, async (req, res) => {
     await Client.close();
   }
 });
-app.listen(process.env.PORT, () => {
-  console.log("Server running into port " + process.env.PORT);
+app.listen(PORT, () => {
+  console.log("Server running into port " + PORT);
 });
