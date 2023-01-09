@@ -84,6 +84,34 @@ app.get("/edit_profile/:id", authentication, async (req, res) => {
     await Client.close();
   }
 });
+app.get("/username", async (req, res) => {
+  await Client.connect();
+  try {
+    const Db = Client.db(process.env.DB_NAME);
+    let user = await Db.collection(process.env.DB_COLLECTION_ONE)
+      .find()
+      .toArray();
+    if (user) {
+      res.json({
+        statusCode: 200,
+        user,
+      });
+    } else {
+      res.json({
+        statusCode: 401,
+        message: "couldn't connect",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      statusCode: 500,
+      message: "internal server error",
+    });
+  } finally {
+    await Client.close();
+  }
+});
 
 app.get("/post", authentication, async (req, res) => {
   await Client.connect();
@@ -493,34 +521,35 @@ app.post("/post", authentication, async (req, res) => {
     await Client.close();
   }
 });
-app.post("/story", authentication, async (req, res) => {
-  await Client.connect();
-  try {
-    const Db = Client.db(process.env.DB_NAME);
-    let story = await Db.collection(process.env.DB_COLLECTION_THREE).insertOne(
-      req.body
-    );
-    if (story) {
-      res.json({
-        statusCode: 200,
-        message: "upload successful",
-      });
-    } else {
-      res.json({
-        statusCode: 401,
-        message: "upload failed",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      statusCode: 500,
-      message: "internal server error",
-    });
-  } finally {
-    await Client.close();
-  }
-});
+// app.post("/story", authentication, async (req, res) => {
+//   await Client.connect();
+//   try {
+//     const Db = Client.db(process.env.DB_NAME);
+//     let story = await Db.collection(process.env.DB_COLLECTION_THREE).insertOne(
+//       req.body
+//     );
+//     if (story) {
+//       res.json({
+//         statusCode: 200,
+//         message: "upload successful",
+//       });
+//     } else {
+//       res.json({
+//         statusCode: 401,
+//         message: "upload failed",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({
+//       statusCode: 500,
+//       message: "internal server error",
+//     });
+//   } finally {
+//     await Client.close();
+//   }
+// });
+
 app.put("/like/:id", authentication, async (req, res) => {
   await Client.connect();
 
@@ -678,105 +707,105 @@ app.put("/unSaved/:id", authentication, async (req, res) => {
   }
 });
 
-app.put("/highlight/:id", authentication, async (req, res) => {
-  await Client.connect();
-  try {
-    const Db = Client.db(process.env.DB_NAME);
-    let highlight = await Db.collection(
-      process.env.DB_COLLECTION_THREE
-    ).findOneAndUpdate(
-      { _id: ObjectId(req.params.id) },
-      { $push: { Highlights: req.body } }
-    );
-    if (highlight) {
-      res.json({
-        statusCode: 200,
-        message: `you added to highlights that Story ${req.params.id}`,
-      });
-    } else {
-      res.json({
-        statusCode: 401,
-        message: "upload failed",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      statusCode: 500,
-      message: "internal server error",
-    });
-  } finally {
-    await Client.close();
-  }
-});
-app.put("/favorites/:id", authentication, async (req, res) => {
-  await Client.connect();
-  try {
-    const Db = Client.db(process.env.DB_NAME);
-    let person = await Db.collection(process.env.DB_COLLECTION_ONE)
-      .find({ _id: ObjectId(req.params.id) })
-      .toArray();
-    let favorites = await Db.collection(
-      process.env.DB_COLLECTION_ONE
-    ).findOneAndUpdate(
-      { username: user[0].username },
-      { $push: { Favorites: { username: person[0].username } } }
-    );
-    if (favorites) {
-      res.json({
-        statusCode: 200,
-        message: `you added to favorites that user ${person[0].username}`,
-      });
-    } else {
-      res.json({
-        statusCode: 401,
-        message: "upload failed",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      statusCode: 500,
-      message: "internal server error",
-    });
-  } finally {
-    await Client.close();
-  }
-});
-app.put("/removeFavorites/:id", authentication, async (req, res) => {
-  await Client.connect();
-  try {
-    const Db = Client.db(process.env.DB_NAME);
-    let person = await Db.collection(process.env.DB_COLLECTION_ONE)
-      .find({ _id: ObjectId(req.params.id) })
-      .toArray();
-    let remove = await Db.collection(
-      process.env.DB_COLLECTION_ONE
-    ).findOneAndUpdate(
-      { username: user[0].username },
-      { $pull: { Favorites: { username: person[0].username } } }
-    );
-    if (remove) {
-      res.json({
-        statusCode: 200,
-        message: `you remove to favorites that user ${person[0].username}`,
-      });
-    } else {
-      res.json({
-        statusCode: 401,
-        message: "upload failed",
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    res.json({
-      statusCode: 500,
-      message: "internal server error",
-    });
-  } finally {
-    await Client.close();
-  }
-});
+// app.put("/highlight/:id", authentication, async (req, res) => {
+//   await Client.connect();
+//   try {
+//     const Db = Client.db(process.env.DB_NAME);
+//     let highlight = await Db.collection(
+//       process.env.DB_COLLECTION_THREE
+//     ).findOneAndUpdate(
+//       { _id: ObjectId(req.params.id) },
+//       { $push: { Highlights: req.body } }
+//     );
+//     if (highlight) {
+//       res.json({
+//         statusCode: 200,
+//         message: `you added to highlights that Story ${req.params.id}`,
+//       });
+//     } else {
+//       res.json({
+//         statusCode: 401,
+//         message: "upload failed",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({
+//       statusCode: 500,
+//       message: "internal server error",
+//     });
+//   } finally {
+//     await Client.close();
+//   }
+// });
+// app.put("/favorites/:id", authentication, async (req, res) => {
+//   await Client.connect();
+//   try {
+//     const Db = Client.db(process.env.DB_NAME);
+//     let person = await Db.collection(process.env.DB_COLLECTION_ONE)
+//       .find({ _id: ObjectId(req.params.id) })
+//       .toArray();
+//     let favorites = await Db.collection(
+//       process.env.DB_COLLECTION_ONE
+//     ).findOneAndUpdate(
+//       { username: user[0].username },
+//       { $push: { Favorites: { username: person[0].username } } }
+//     );
+//     if (favorites) {
+//       res.json({
+//         statusCode: 200,
+//         message: `you added to favorites that user ${person[0].username}`,
+//       });
+//     } else {
+//       res.json({
+//         statusCode: 401,
+//         message: "upload failed",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({
+//       statusCode: 500,
+//       message: "internal server error",
+//     });
+//   } finally {
+//     await Client.close();
+//   }
+// });
+// app.put("/removeFavorites/:id", authentication, async (req, res) => {
+//   await Client.connect();
+//   try {
+//     const Db = Client.db(process.env.DB_NAME);
+//     let person = await Db.collection(process.env.DB_COLLECTION_ONE)
+//       .find({ _id: ObjectId(req.params.id) })
+//       .toArray();
+//     let remove = await Db.collection(
+//       process.env.DB_COLLECTION_ONE
+//     ).findOneAndUpdate(
+//       { username: user[0].username },
+//       { $pull: { Favorites: { username: person[0].username } } }
+//     );
+//     if (remove) {
+//       res.json({
+//         statusCode: 200,
+//         message: `you remove to favorites that user ${person[0].username}`,
+//       });
+//     } else {
+//       res.json({
+//         statusCode: 401,
+//         message: "upload failed",
+//       });
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     res.json({
+//       statusCode: 500,
+//       message: "internal server error",
+//     });
+//   } finally {
+//     await Client.close();
+//   }
+// });
 
 app.put("/follow/:id", authentication, async (req, res) => {
   await Client.connect();
@@ -864,12 +893,20 @@ app.post("/signup", async (req, res) => {
       .find({ email: req.body.email })
       .toArray();
     let username = await Db.collection(process.env.DB_COLLECTION_ONE)
-      .find({ username: user[0].username })
+      .find({ username: req.body.username })
       .toArray();
-    if ((username.length === 0) & (email.length <= 2)) {
-      req.body.password = await hashPassword(req.body.password);
+    if ((username.length === 0) & (email.length === 0)) {
+      let hash_password = await hashPassword(req.body.password);
+      let userData = {
+        name: req.body.name,
+        email: req.body.email,
+        username: req.body.username,
+        password: hash_password,
+        Followers: [],
+        Following: [],
+      };
       let user = await Db.collection(process.env.DB_COLLECTION_ONE).insertOne(
-        req.body
+        userData
       );
       if (user) {
         res.json({
